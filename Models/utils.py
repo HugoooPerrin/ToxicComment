@@ -43,6 +43,9 @@ def train(num_epoch, model, train_loader, optimizer, criterion, valid_loader=Non
             outputs = model(inputs)
             # Loss
             loss = criterion(outputs, labels)
+
+            del inputs, labels
+
             # Backward 
             loss.backward()
             # Optimize
@@ -50,48 +53,60 @@ def train(num_epoch, model, train_loader, optimizer, criterion, valid_loader=Non
             # print statistics
             running_loss += loss.data[0]
             i += 1
-            if i % 100 == 99:    # Print every 1000 mini-batches
+            if i % 100 == 99:    # Print every 100 mini-batches
 
-                if valid_loader is not None:
-                    model.eval()
+                model.eval()
 
-                    inputs = valid_loader.dataset.data_tensor
-                    labels = valid_loader.dataset.target_tensor
-                    labels = labels
-                    # Wrap them in Variable
-                    if use_GPU is True:
-                        inputs = Variable(inputs.cuda(), requires_grad=False)
-                    else:
-                        inputs = Variable(inputs, requires_grad=False)
-
-                    outputs = model(inputs)
-
-                    prediction = outputs.data.float() # probabilities             
-                    prediction = expit(prediction.cpu().numpy())
-                    target = labels.cpu().numpy()    
-
-                    print('Epoch: %d, step: %5d, training loss: %.4f, validation loss: %.5f' % 
-                          (epoch + 1, i + 1, running_loss / 100, log_loss(target, prediction)))
-                    running_loss = 0.0
+                inputs = valid_loader.dataset.data_tensor
+                labels = valid_loader.dataset.target_tensor
+                labels = labels
+                # Wrap them in Variable
+                if use_GPU is True:
+                    inputs = Variable(inputs.cuda(), requires_grad=False)
                 else:
-                    print('Epoch: %d, step: %5d, training loss: %.4f' % 
-                          (epoch + 1, i + 1, running_loss / 100))
-                    running_loss = 0.0
+                    inputs = Variable(inputs, requires_grad=False)
+
+                outputs = model(inputs)
+
+                prediction = outputs.data.float() # probabilities             
+                prediction = expit(prediction.cpu().numpy())
+                target = labels.cpu().numpy()    
+
+                print('Epoch: %d, step: %5d, training loss: %.4f, validation loss: %.5f' % 
+                      (epoch + 1, i + 1, running_loss / 100, log_loss(target, prediction)))
+                running_loss = 0.0
 
 
-def predict(model, dataset):
-
-    model = model.cpu()
+def predict(model, dataset_loader, use_GPU=True):
 
     model.eval()
-    # Get the inputs
-    inputs = dataset
-    # Wrap them in Variable
-    inputs = Variable(inputs, requires_grad=False)   
 
-    outputs = model(inputs)
-    
-    prediction = outputs.data.numpy() # probabilities             
-    prediction = expit(prediction)
+    concatenate = False
+
+    # Get the inputs
+    for data in dataset_loader:
+        inputs = data
+        # Wrap them in Variable
+        if use_GPU is True:
+            inputs = Variable(inputs.cuda(), requires_grad=False)
+        else:
+            inputs = Variable(inputs, requires_grad=False)
+
+        outputs = model(inputs)
+
+        del inputs
+
+        if use_GPU is True:
+            prediction = outputs.data.cpu().numpy() # probabilities      
+        else:
+            prediction = outputs.data.numpy() # probabilities      
+
+        if concatenate:
+            full_prediction = numpy.concatenate((full_prediction,prediction), axis=0)
+        else:
+            full_prediction = prediction
+
+    # Compute sigmoid function
+    full_prediction = expit(prediction)
 
     return prediction
