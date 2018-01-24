@@ -24,7 +24,7 @@ def train(num_epoch, model, train_loader, optimizer, criterion, valid_loader=Non
 
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
-    print('\n>> LEARNING: {} parameters\n'.format(params))
+    print('\n>> Learning: {} parameters\n'.format(params))
     i = 0
     for epoch in range(num_epoch):
         total = 0

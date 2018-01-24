@@ -53,9 +53,11 @@ class CNN(nn.Module):
         self.conv2 = nn.Conv1d(5, 10, 5) # (96-(5-1))*10 = 92*10
         self.pool2 = nn.MaxPool1d(2, 2) # |(92-2)/2+1|*10 = 46*10
         self.linear1 = nn.Linear(46*10, 200)
-        self.relu1 = nn.ReLU()
+        self.tanh1 = nn.Tanh()
+        self.dropout1 = nn.Dropout(0.4)
         self.linear2 = nn.Linear(200, 100)
-        self.relu2 = nn.ReLU()
+        self.tanh2 = nn.Tanh()
+        self.dropout2 = nn.Dropout(0.4)
         self.linear3 = nn.Linear(100, 1)
         
     def forward(self, x):
@@ -64,8 +66,10 @@ class CNN(nn.Module):
         out = self.pool2(out)
         out = out.view(-1, 46*10)
         out = self.linear1(out)
-        out = self.relu1(out)
+        out = self.tanh1(out)
+        out = self.dropout1(out)
         out = self.linear2(out)
-        out = self.relu2(out)
+        out = self.tanh2(out)
+        out = self.dropout2(out)
         out = self.linear3(out)
         return out
