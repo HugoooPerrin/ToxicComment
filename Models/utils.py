@@ -59,26 +59,31 @@ def train(num_epoch, model, train_loader, optimizer, criterion, valid_loader=Non
             i += 1
             if i % 100 == 99:    # Print every 100 mini-batches
 
-                model.eval()
+                if valid_loader is not None:
+                    model.eval()
 
-                inputs = valid_loader.dataset.data_tensor
-                labels = valid_loader.dataset.target_tensor
-                labels = labels
-                # Wrap them in Variable
-                if use_GPU is True:
-                    inputs = Variable(inputs.cuda(), requires_grad=False)
+                    inputs = valid_loader.dataset.data_tensor
+                    labels = valid_loader.dataset.target_tensor
+                    labels = labels
+                    # Wrap them in Variable
+                    if use_GPU is True:
+                        inputs = Variable(inputs.cuda(), requires_grad=False)
+                    else:
+                        inputs = Variable(inputs, requires_grad=False)
+
+                    outputs = model(inputs)
+
+                    prediction = outputs.data.float() # probabilities             
+                    prediction = expit(prediction.cpu().numpy())
+                    target = labels.cpu().numpy()    
+
+                    print('Epoch: %d, step: %5d, training loss: %.4f, validation loss: %.5f' % 
+                          (epoch + 1, i + 1, running_loss / 100, log_loss(target, prediction)))
+                    running_loss = 0.0
                 else:
-                    inputs = Variable(inputs, requires_grad=False)
-
-                outputs = model(inputs)
-
-                prediction = outputs.data.float() # probabilities             
-                prediction = expit(prediction.cpu().numpy())
-                target = labels.cpu().numpy()    
-
-                print('Epoch: %d, step: %5d, training loss: %.4f, validation loss: %.5f' % 
-                      (epoch + 1, i + 1, running_loss / 100, log_loss(target, prediction)))
-                running_loss = 0.0
+                    print('Epoch: %d, step: %5d, training loss: %.4f' % 
+                          (epoch + 1, i + 1, running_loss / 100))
+                    running_loss = 0.0
 
 
 def predict(model, dataset_loader, use_GPU=True):
