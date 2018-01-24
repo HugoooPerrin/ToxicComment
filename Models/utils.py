@@ -11,12 +11,16 @@ import numpy as np
 from sklearn.metrics import log_loss
 from scipy.special import expit
 
+from copy import deepcopy
 
 
 #--------------------------------------------------------------
 #--------------------------------------------------------------
 
 def train(num_epoch, model, train_loader, optimizer, criterion, valid_loader=None, use_GPU=True):
+
+    if use_GPU:
+        model = model.cuda()
 
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
@@ -85,6 +89,7 @@ def predict(model, dataset_loader, use_GPU=True):
 
     # Get the inputs
     for data in dataset_loader:
+
         inputs = data
         # Wrap them in Variable
         if use_GPU is True:
@@ -96,17 +101,19 @@ def predict(model, dataset_loader, use_GPU=True):
 
         del inputs
 
-        if use_GPU is True:
+        if use_GPU:
             prediction = outputs.data.cpu().numpy() # probabilities      
         else:
             prediction = outputs.data.numpy() # probabilities      
 
         if concatenate:
-            full_prediction = numpy.concatenate((full_prediction,prediction), axis=0)
+            full_prediction = np.concatenate((full_prediction,prediction), axis=0)
         else:
             full_prediction = prediction
+            concatenate = True
+
 
     # Compute sigmoid function
-    full_prediction = expit(prediction)
+    full_prediction = expit(full_prediction)
 
-    return prediction
+    return full_prediction

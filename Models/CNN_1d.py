@@ -49,12 +49,12 @@ class NN(nn.Module):
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv1d(1, 10, 5) # (300-(5-1))*10 = 296*10
-        self.conv2 = nn.Conv1d(10, 20, 5) # (296-(5-1))*20 = 292*20
-        self.pool2 = nn.MaxPool1d(2, 2) # |(292-2)/2+1|*20 = 146*20
-        self.linear1 = nn.Linear(146*20, 500)
+        self.conv1 = nn.Conv1d(1, 5, 5) # (100-(5-1))*5 = 96*5
+        self.conv2 = nn.Conv1d(5, 10, 5) # (96-(5-1))*10 = 92*10
+        self.pool2 = nn.MaxPool1d(2, 2) # |(92-2)/2+1|*10 = 46*10
+        self.linear1 = nn.Linear(46*10, 200)
         self.relu1 = nn.ReLU()
-        self.linear2 = nn.Linear(500, 100)
+        self.linear2 = nn.Linear(200, 100)
         self.relu2 = nn.ReLU()
         self.linear3 = nn.Linear(100, 1)
         
@@ -62,7 +62,7 @@ class CNN(nn.Module):
         out = self.conv1(x)
         out = self.conv2(out)
         out = self.pool2(out)
-        out = out.view(-1, 146*20)
+        out = out.view(-1, 46*10)
         out = self.linear1(out)
         out = self.relu1(out)
         out = self.linear2(out)
