@@ -25,7 +25,7 @@ from sklearn.metrics import log_loss
 from multiprocessing import Pool
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from models import Inception
+from models import Inception, NN
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
 from utils import train, predict
@@ -41,11 +41,11 @@ targets = Xtrain[list_classes].values
 
 del Xtrain
 
-# Preprocess data for torch
+# Preprocess data for 1D convolution
 train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1])
 
 # Cross validation loop
-CV = 1
+CV = 3
 
 CV_score = 0
 
@@ -80,10 +80,10 @@ for i in range(CV):
         labels_test = test_labels[:,list_classes.index(target)]
         labels_test = labels_test.reshape(test_labels.shape[0],1)
 
-        use_GPU = False
+        use_GPU = True
 
-        batch_size = 1024
-        num_epoch = 7
+        batch_size = 512
+        num_epoch = 6
 
         train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                        torch.FloatTensor(labels_train))
@@ -124,10 +124,10 @@ for i in range(CV):
 
     CV_score += score*(1/CV)
 
-    print("\n\nModel intermediate score: {}\n".format(score))
+    print("\n\nModel intermediate score: {}\n".format(round(score,5)))
 
 
-print("\nModel final score: {}\n".format(CV_score))
+print("\nModel final score: {}\n".format(round(CV_score,5)))
 
 
 time2 = time.time()

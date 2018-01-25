@@ -62,8 +62,8 @@ for target in list_classes:
 
     use_GPU = True
 
-    batch_size = 1024
-    num_epoch = 7
+    batch_size = 512
+    num_epoch = 6
 
     train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                    torch.FloatTensor(labels_train))
@@ -90,7 +90,7 @@ for target in list_classes:
 
     predictions[target] = predict(net, test_loader, use_GPU=use_GPU)
 
-predictions.to_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/3rd_submission.csv')
+predictions.to_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/5th_submission.csv')
 
 time2 = time.time()
 diff_time = (time2 - time1)/60
