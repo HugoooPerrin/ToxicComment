@@ -23,10 +23,10 @@ from sklearn.metrics import log_loss
 
 from multiprocessing import Pool
 
-sys.path.append('/home/hugoperrin/Bureau/Data science/Kaggle/ToxicComment/Models/')
-from CNN_1d import CNN
+sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
+from models import CNN
 
-sys.path.append('/home/hugoperrin/Bureau/Data science/Kaggle/ToxicComment/Models/')
+sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
 from utils import train, predict
 
 time1 = time.time()
@@ -62,8 +62,8 @@ for target in list_classes:
 
     use_GPU = True
 
-    batch_size = 512
-    num_epoch = 7
+    batch_size = 1024
+    num_epoch = 9
 
     train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                    torch.FloatTensor(labels_train))
