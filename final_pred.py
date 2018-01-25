@@ -24,7 +24,7 @@ from sklearn.metrics import log_loss
 from multiprocessing import Pool
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from models import CNN
+from models import Inception
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
 from utils import train, predict
@@ -63,7 +63,7 @@ for target in list_classes:
     use_GPU = True
 
     batch_size = 1024
-    num_epoch = 9
+    num_epoch = 7
 
     train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                    torch.FloatTensor(labels_train))
@@ -82,7 +82,7 @@ for target in list_classes:
                                                shuffle=False, 
                                                num_workers = 8)
 
-    net = CNN()
+    net = Inception()
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.RMSprop(net.parameters(), lr=0.00001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
@@ -90,7 +90,7 @@ for target in list_classes:
 
     predictions[target] = predict(net, test_loader, use_GPU=use_GPU)
 
-predictions.to_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/2nd_submission.csv')
+predictions.to_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/3rd_submission.csv')
 
 time2 = time.time()
 diff_time = (time2 - time1)/60

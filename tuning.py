@@ -25,7 +25,7 @@ from sklearn.metrics import log_loss
 from multiprocessing import Pool
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from models import CNN
+from models import Inception
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
 from utils import train, predict
@@ -45,7 +45,7 @@ del Xtrain
 train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1])
 
 # Cross validation loop
-CV = 3
+CV = 1
 
 CV_score = 0
 
@@ -56,13 +56,13 @@ for i in range(CV):
     random_order = permutation(len(train_vect))
 
     # # Train test split
-    train_comments = train_vect[random_order[:130000],:,:]
-    valid_comments = train_vect[random_order[130001:145000],:,:]
-    test_comments = train_vect[random_order[145001:]]
+    train_comments = train_vect[random_order[:120000],:,:]
+    valid_comments = train_vect[random_order[120001:135000],:,:]
+    test_comments = train_vect[random_order[135001:]]
 
-    train_labels = targets[random_order[:130000],:]
-    valid_labels = targets[random_order[130001:145000],:]
-    test_labels = targets[random_order[145001:],:]
+    train_labels = targets[random_order[:120000],:]
+    valid_labels = targets[random_order[120001:135000],:]
+    test_labels = targets[random_order[135001:],:]
 
     # Get final predictions
     predictions = pd.DataFrame(index=range(len(test_comments)))
@@ -80,10 +80,10 @@ for i in range(CV):
         labels_test = test_labels[:,list_classes.index(target)]
         labels_test = labels_test.reshape(test_labels.shape[0],1)
 
-        use_GPU = True
+        use_GPU = False
 
         batch_size = 1024
-        num_epoch = 9
+        num_epoch = 7
 
         train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                        torch.FloatTensor(labels_train))
@@ -109,7 +109,7 @@ for i in range(CV):
                                                    shuffle=False, 
                                                    num_workers = 8)
 
-        net = CNN()
+        net = Inception()
         criterion = nn.BCEWithLogitsLoss()
         optimizer = optim.RMSprop(net.parameters(), lr=0.00001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
@@ -127,9 +127,9 @@ for i in range(CV):
     print("\n\nModel intermediate score: {}\n".format(score))
 
 
-print("\n\nModel final score: {}\n".format(CV_score))
+print("\nModel final score: {}\n".format(CV_score))
 
 
 time2 = time.time()
 diff_time = (time2 - time1)/60
-print("\n\nTraining time is {} minutes\n".format(round(diff_time,1)))
+print("\nTraining time is {} minutes\n".format(round(diff_time,1)))
