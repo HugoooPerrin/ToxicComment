@@ -25,7 +25,7 @@ from sklearn.metrics import log_loss
 from multiprocessing import Pool
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from models import Inception, NN
+from models import CNN
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
 from utils import train, predict
@@ -45,7 +45,7 @@ del Xtrain
 train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1])
 
 # Cross validation loop
-CV = 3
+CV = 4
 
 CV_score = 0
 
@@ -83,7 +83,7 @@ for i in range(CV):
         use_GPU = True
 
         batch_size = 512
-        num_epoch = 6
+        num_epoch = 4
 
         train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                        torch.FloatTensor(labels_train))
@@ -109,9 +109,9 @@ for i in range(CV):
                                                    shuffle=False, 
                                                    num_workers = 8)
 
-        net = Inception()
+        net = CNN()
         criterion = nn.BCEWithLogitsLoss()
-        optimizer = optim.RMSprop(net.parameters(), lr=0.00001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
+        optimizer = optim.RMSprop(net.parameters(), lr=0.000015, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
         train(num_epoch, net, train_loader, optimizer, criterion, valid_loader=valid_loader, use_GPU=use_GPU)
 

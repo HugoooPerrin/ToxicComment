@@ -39,23 +39,26 @@ class CNN(nn.Module):
 
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv1d(1, 5, 5) # (100-(5-1))*5 = 96*5
-        self.conv2 = nn.Conv1d(5, 10, 5) # (96-(5-1))*10 = 92*10
-        self.pool2 = nn.MaxPool1d(2, 2) # |(92-2)/2+1|*10 = 46*10
+
+        self.cnn = nn.Sequential(
+                        nn.Conv1d(1, 16, kernel_size=1),  # (100-(1-1))*16 = 100*16
+                        nn.Conv1d(16, 32, kernel_size=5),  # (100-(5-1))*32 = 96*32
+                        nn.BatchNorm1d(32),
+                        nn.ReLU(),
+                        nn.MaxPool1d(2, 2))              # |(96-2)/2+1|*32 = 48*32
+
         self.fc = nn.Sequential(
-            nn.Linear(46*10, 200),
-            nn.Tanh(),
-            nn.Dropout(0.4),
-            nn.Linear(200, 100),
-            nn.Tanh(),
-            nn.Dropout(0.4),
-            nn.Linear(100, 1))
+                        nn.Linear(48*32, 750),
+                        nn.ReLU(),
+                        nn.Dropout(0.4),
+                        nn.Linear(750, 250),
+                        nn.ReLU(),
+                        nn.Dropout(0.4),
+                        nn.Linear(250, 1))
         
     def forward(self, x):
-        out = self.conv1(x)
-        out = self.conv2(out)
-        out = self.pool2(out)
-        out = out.view(-1, 46*10)
+        out = self.cnn(x)
+        out = out.view(-1, 48*32)
         out = self.fc(out)
         return out
 
