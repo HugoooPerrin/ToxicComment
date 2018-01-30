@@ -25,7 +25,7 @@ from sklearn.metrics import log_loss
 from multiprocessing import Pool
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from models import CNN
+from models import Inception, NN, CNN
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
 from utils import train, predict
@@ -56,8 +56,8 @@ for i in range(CV):
     random_order = permutation(len(train_vect))
 
     # # Train test split
-    train_comments = train_vect[random_order[:120000],:,:]
-    valid_comments = train_vect[random_order[120001:135000],:,:]
+    train_comments = train_vect[random_order[:120000]]
+    valid_comments = train_vect[random_order[120001:135000]]
     test_comments = train_vect[random_order[135001:]]
 
     train_labels = targets[random_order[:120000],:]
@@ -83,7 +83,7 @@ for i in range(CV):
         use_GPU = True
 
         batch_size = 512
-        num_epoch = 4
+        num_epoch = 6
 
         train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                        torch.FloatTensor(labels_train))
@@ -109,9 +109,9 @@ for i in range(CV):
                                                    shuffle=False, 
                                                    num_workers = 8)
 
-        net = CNN()
+        net = Inception()
         criterion = nn.BCEWithLogitsLoss()
-        optimizer = optim.RMSprop(net.parameters(), lr=0.000015, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
+        optimizer = optim.RMSprop(net.parameters(), lr=0.00001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
         train(num_epoch, net, train_loader, optimizer, criterion, valid_loader=valid_loader, use_GPU=use_GPU)
 

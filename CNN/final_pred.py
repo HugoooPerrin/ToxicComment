@@ -82,7 +82,7 @@ for target in list_classes:
                                                shuffle=False, 
                                                num_workers = 8)
 
-    net = CNN()
+    net = Inception()
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.RMSprop(net.parameters(), lr=0.000015, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
