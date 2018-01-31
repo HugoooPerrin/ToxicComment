@@ -8,7 +8,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 import numpy as np
-from sklearn.metrics import log_loss
+from sklearn.metrics import log_loss, roc_auc_score
 from scipy.special import expit
 
 from copy import deepcopy
@@ -77,8 +77,8 @@ def train(num_epoch, model, train_loader, optimizer, criterion, valid_loader=Non
                     prediction = expit(prediction.cpu().numpy())
                     target = labels.cpu().numpy()    
 
-                    print('Epoch: %d, step: %5d, training loss: %.4f, validation loss: %.5f' % 
-                          (epoch + 1, i + 1, running_loss / 100, log_loss(target, prediction)))
+                    print('Epoch: %d, step: %5d, validation AUC-ROC: %.5f' % 
+                          (epoch + 1, i + 1, running_loss / 100, roc_auc_score(target, prediction)))
                     running_loss = 0.0
                 else:
                     print('Epoch: %d, step: %5d, training loss: %.4f' % 

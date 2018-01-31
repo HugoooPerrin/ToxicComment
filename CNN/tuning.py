@@ -20,7 +20,7 @@ from torch.autograd import Variable
 import torchvision
 import torchvision.transforms as transforms
 
-from sklearn.metrics import log_loss
+from sklearn.metrics import log_loss, roc_auc_score
 
 from multiprocessing import Pool
 
@@ -42,7 +42,7 @@ targets = Xtrain[list_classes].values
 del Xtrain
 
 # Preprocess data for 1D convolution
-train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1])
+# train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1])
 
 # Cross validation loop
 CV = 4
@@ -109,7 +109,7 @@ for i in range(CV):
                                                    shuffle=False, 
                                                    num_workers = 8)
 
-        net = Inception()
+        net = NN()
         criterion = nn.BCEWithLogitsLoss()
         optimizer = optim.RMSprop(net.parameters(), lr=0.00001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
@@ -120,7 +120,7 @@ for i in range(CV):
     score = 0
 
     for i in range(len(list_classes)):
-        score += log_loss(test_labels[:,i],predictions.iloc[:,i])*(1/len(list_classes))
+        score += roc_auc_score(test_labels[:,i],predictions.iloc[:,i])*(1/len(list_classes))
 
     CV_score += score*(1/CV)
 

@@ -90,7 +90,7 @@ for target in list_classes:
 
     predictions[target] = predict(net, test_loader, use_GPU=use_GPU)
 
-predictions.to_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/5th_submission.csv')
+predictions.to_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/6th_submission.csv')
 
 time2 = time.time()
 diff_time = (time2 - time1)/60
