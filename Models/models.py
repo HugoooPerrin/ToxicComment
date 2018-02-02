@@ -51,7 +51,7 @@ class CNN(nn.Module):
                         nn.Linear(45*16, 300),
                         nn.ReLU(),
                         nn.Dropout(0.4),
-                        nn.Linear(300, 1))
+                        nn.Linear(300, 6))
         
     def forward(self, x):
         out = self.cnn(x)
@@ -94,7 +94,7 @@ class Inception(nn.Module):
                                 nn.Linear(1024, 512),
                                 nn.ReLU(),
                                 nn.Dropout(0.5),
-                                nn.Linear(512, 1))
+                                nn.Linear(512, 6))
         
     def forward(self, x):
 
