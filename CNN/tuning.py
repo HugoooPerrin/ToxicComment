@@ -3,29 +3,19 @@
 
 # Import modules
 
-import pandas as pd
-import numpy as np
-from numpy.random import permutation
 import sys
-import nltk
-import pickle
 import time
 
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
-import torch.utils.data as utils
-import torchwordemb
 import torch.optim as optim
-from torch.autograd import Variable
-import torchvision
-import torchvision.transforms as transforms
-
-from sklearn.metrics import log_loss, roc_auc_score
-
-from multiprocessing import Pool
+from numpy.random import permutation
+from sklearn.metrics import roc_auc_score
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from models import Inception, NN, CNN
+from models import NN
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
 from utils import train, predict
