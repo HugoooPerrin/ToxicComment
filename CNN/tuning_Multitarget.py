@@ -28,7 +28,7 @@ sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/
 from models import Inception, NN, CNN
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from utils import train, predict
+from utils import train, train_multitarget, predict
 
 time1 = time.time()
 
@@ -72,10 +72,10 @@ for i in range(CV):
     num_epoch = 6
 
     train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
-                                                   torch.FloatTensor(labels_train))
+                                                   torch.FloatTensor(train_labels))
 
     valid_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(valid_comments), 
-                                                   torch.FloatTensor(labels_valid))
+                                                   torch.FloatTensor(valid_labels))
 
     test_dataset = torch.FloatTensor(test_comments)
 
@@ -95,13 +95,14 @@ for i in range(CV):
                                                shuffle=False, 
                                                num_workers = 8)
 
-    net = NN()
+    net = CNN()
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.RMSprop(net.parameters(), lr=0.00001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
-    train(num_epoch, net, train_loader, optimizer, criterion, valid_loader=valid_loader, use_GPU=use_GPU)
+    train_multitarget(num_epoch, net, train_loader, optimizer, criterion, 
+                            valid_loader=valid_loader, use_GPU=use_GPU, target_number=6)
 
-    predictions = predict(net, test_loader, use_GPU=use_GPU)
+    predictions = pd.DataFrame(predict(net, test_loader, use_GPU=use_GPU))
 
     score = 0
 
@@ -110,7 +111,7 @@ for i in range(CV):
 
     CV_score += score*(1/CV)
 
-    print("\n\nModel intermediate score: {}\n".format(round(score,5)))
+    print("\nModel intermediate score: {}\n".format(round(score,5)))
 
 
 print("\nModel final score: {}\n".format(round(CV_score,5)))

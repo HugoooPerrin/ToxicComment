@@ -78,7 +78,8 @@ net = Inception()
 criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.RMSprop(net.parameters(), lr=0.000015, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
-train(num_epoch, net, train_loader, optimizer, criterion, valid_loader=None, use_GPU=use_GPU)
+    train_multitarget(num_epoch, net, train_loader, optimizer, criterion, 
+                            valid_loader=None, use_GPU=use_GPU, target_number=6)
 
 predictions = predict(net, test_loader, use_GPU=use_GPU)
 
