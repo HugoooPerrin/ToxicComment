@@ -122,4 +122,4 @@ print("\nModel final score: {}\n".format(round(CV_score,5)))
 
 time2 = time.time()
 diff_time = (time2 - time1)/60
-print("\nTraining time is {} minutes\n".format(round(diff_time,1)))
+print("Training time is {} minutes\n".format(round(diff_time,1)))

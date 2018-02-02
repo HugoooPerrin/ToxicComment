@@ -79,7 +79,7 @@ def train(num_epoch, model, train_loader, optimizer, criterion, valid_loader=Non
                     prediction = expit(prediction.cpu().numpy())
                     target = labels.cpu().numpy()    
 
-                    print('Epoch: %d, step: %5d, validation AUC-ROC: %.5f' % 
+                    print('Epoch: %d, step: %5d, training loss: %.4f, validation AUC-ROC: %.5f' % 
                           (epoch + 1, i + 1, running_loss / 100, roc_auc_score(target, prediction)))
                     running_loss = 0.0
                 else:
@@ -138,11 +138,11 @@ def train_multitarget(num_epoch, model, train_loader, optimizer, criterion, vali
 
                     score = 0
 
-                    for i in range(target_number):
-                        score += roc_auc_score(labels[:,i],predictions.iloc[:,i])*(1/target_number)
+                    for j in range(target_number):
+                        score += roc_auc_score(labels[:,j],predictions.iloc[:,j])*(1/target_number)
 
-                    print('Epoch: %d, step: %5d, validation AUC-ROC: %.5f' % 
-                          (epoch + 1, i + 1, score))
+                    print('Epoch: %d, step: %5d, training loss: %.4f, validation AUC-ROC: %.5f' % 
+                          (epoch + 1, i + 1, running_loss / 100, score))
                     running_loss = 0.0
                 else:
                     print('Epoch: %d, step: %5d, training loss: %.4f' % 

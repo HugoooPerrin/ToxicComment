@@ -68,8 +68,8 @@ for i in range(CV):
 
     use_GPU = True
 
-    batch_size = 512
-    num_epoch = 6
+    batch_size = 128
+    num_epoch = 10
 
     train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                    torch.FloatTensor(train_labels))
@@ -95,9 +95,9 @@ for i in range(CV):
                                                shuffle=False, 
                                                num_workers = 8)
 
-    net = CNN()
+    net = Inception()
     criterion = nn.BCEWithLogitsLoss()
-    optimizer = optim.RMSprop(net.parameters(), lr=0.00001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
+    optimizer = optim.RMSprop(net.parameters(), lr=0.000005, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
     train_multitarget(num_epoch, net, train_loader, optimizer, criterion, 
                             valid_loader=valid_loader, use_GPU=use_GPU, target_number=6)
@@ -119,4 +119,4 @@ print("\nModel final score: {}\n".format(round(CV_score,5)))
 
 time2 = time.time()
 diff_time = (time2 - time1)/60
-print("\nTraining time is {} minutes\n".format(round(diff_time,1)))
+print("Training time is {} minutes\n".format(round(diff_time,1)))

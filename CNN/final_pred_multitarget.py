@@ -24,10 +24,10 @@ from sklearn.metrics import log_loss
 from multiprocessing import Pool
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from models import CNN
+from models import *
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from utils import train, predict
+from utils import *
 
 time1 = time.time()
 
@@ -54,12 +54,11 @@ del train_vect, test_vect
 
 use_GPU = True
 
-batch_size = 512
-num_epoch = 4
+batch_size = 128
+num_epoch = 10
 
 train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                torch.FloatTensor(labels_train))
-
 
 test_dataset = torch.FloatTensor(test_comments)
 
@@ -76,15 +75,16 @@ test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
 
 net = Inception()
 criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.RMSprop(net.parameters(), lr=0.000015, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
+optimizer = optim.RMSprop(net.parameters(), lr=0.000005, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
-    train_multitarget(num_epoch, net, train_loader, optimizer, criterion, 
-                            valid_loader=None, use_GPU=use_GPU, target_number=6)
+train_multitarget(num_epoch, net, train_loader, optimizer, criterion, 
+                        valid_loader=None, use_GPU=use_GPU, target_number=6)
 
-predictions = predict(net, test_loader, use_GPU=use_GPU)
+predictions = pd.DataFrame(predict(net, test_loader, use_GPU=use_GPU), index=final_id)
+predictions.columns = list_classes
 
-predictions.to_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/6th_submission.csv')
+predictions.to_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/7th_submission.csv')
 
 time2 = time.time()
 diff_time = (time2 - time1)/60
-print("\n\nTraining time is {} minutes\n".format(round(diff_time,1)))
+print("\nTraining time is {} minutes\n".format(round(diff_time,1)))
