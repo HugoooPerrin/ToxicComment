@@ -32,8 +32,11 @@ from utils import *
 
 time1 = time.time()
 
-# Import data
-train_vect = np.load('/home/hugoperrin/Bureau/Datasets/ToxicComment/Comment2Vec_train_vM.npy')
+# Import data (1D)
+train_vect = np.load('/home/hugoperrin/Bureau/Datasets/ToxicComment/Comment2Vec_train.npy')
+
+# Import data (2D)
+# train_vect = np.load('/home/hugoperrin/Bureau/Datasets/ToxicComment/Comment2Vec_train_vM.npy')
 
 Xtrain = pd.read_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/train.csv')
 list_classes = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
@@ -41,11 +44,15 @@ targets = Xtrain[list_classes].values
 
 del Xtrain
 
+
+# Preprocess data for 1D convolution
+train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1])
+
 # Preprocess data for 2D convolution
-train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1], train_vect.shape[2])
+# train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1], train_vect.shape[2])
 
 # Cross validation loop
-CV = 1
+CV = 4
 
 CV_score = 0
 
@@ -68,8 +75,8 @@ for i in range(CV):
 
     use_GPU = True
 
-    batch_size = 512
-    num_epoch = 1
+    batch_size = 256
+    num_epoch = 6
 
     train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                    torch.FloatTensor(train_labels))
@@ -95,9 +102,11 @@ for i in range(CV):
                                                shuffle=False, 
                                                num_workers = 8)
 
-    net = CNN_2D()
+    net = CNN()
+
     criterion = nn.BCEWithLogitsLoss()
-    optimizer = optim.RMSprop(net.parameters(), lr=0.1, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
+    optimizer = optim.SGD(net.parameters(), lr=0.02, momentum=0.9)
+    # optimizer = optim.RMSprop(net.parameters(), lr=0.0001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
     train_multitarget(num_epoch, net, train_loader, optimizer, criterion, 
                             valid_loader=valid_loader, use_GPU=use_GPU, target_number=6)

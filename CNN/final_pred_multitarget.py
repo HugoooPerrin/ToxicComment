@@ -54,8 +54,8 @@ del train_vect, test_vect
 
 use_GPU = True
 
-batch_size = 128
-num_epoch = 10
+batch_size = 512
+num_epoch = 5
 
 train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                torch.FloatTensor(labels_train))
@@ -73,9 +73,9 @@ test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
                                            shuffle=False, 
                                            num_workers = 8)
 
-net = Inception()
+net = CNN()
 criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.RMSprop(net.parameters(), lr=0.000005, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
+optimizer = optim.RMSprop(net.parameters(), lr=0.0001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
 train_multitarget(num_epoch, net, train_loader, optimizer, criterion, 
                         valid_loader=None, use_GPU=use_GPU, target_number=6)
