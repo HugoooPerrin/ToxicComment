@@ -25,15 +25,15 @@ from sklearn.metrics import log_loss, roc_auc_score
 from multiprocessing import Pool
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from models import Inception, NN, CNN
+from models import *
 
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
-from utils import train, train_multitarget, predict
+from utils import *
 
 time1 = time.time()
 
 # Import data
-train_vect = np.load('/home/hugoperrin/Bureau/Datasets/ToxicComment/Comment2Vec_train.npy')
+train_vect = np.load('/home/hugoperrin/Bureau/Datasets/ToxicComment/Comment2Vec_train_vM.npy')
 
 Xtrain = pd.read_csv('/home/hugoperrin/Bureau/Datasets/ToxicComment/train.csv')
 list_classes = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
@@ -41,11 +41,11 @@ targets = Xtrain[list_classes].values
 
 del Xtrain
 
-# Preprocess data for 1D convolution
-train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1])
+# Preprocess data for 2D convolution
+train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1], train_vect.shape[2])
 
 # Cross validation loop
-CV = 4
+CV = 1
 
 CV_score = 0
 
@@ -68,8 +68,8 @@ for i in range(CV):
 
     use_GPU = True
 
-    batch_size = 128
-    num_epoch = 10
+    batch_size = 512
+    num_epoch = 1
 
     train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                    torch.FloatTensor(train_labels))
@@ -95,9 +95,9 @@ for i in range(CV):
                                                shuffle=False, 
                                                num_workers = 8)
 
-    net = Inception()
+    net = CNN_2D()
     criterion = nn.BCEWithLogitsLoss()
-    optimizer = optim.RMSprop(net.parameters(), lr=0.000005, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
+    optimizer = optim.RMSprop(net.parameters(), lr=0.1, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
     train_multitarget(num_epoch, net, train_loader, optimizer, criterion, 
                             valid_loader=valid_loader, use_GPU=use_GPU, target_number=6)

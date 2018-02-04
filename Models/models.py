@@ -60,6 +60,30 @@ class CNN(nn.Module):
         return out
 
 
+class CNN_2D(nn.Module):
+
+    def __init__(self):
+        super(CNN_2D, self).__init__()
+
+        self.cnn = nn.Sequential(
+                        nn.Conv2d(1, 8, kernel_size=1),  # (100-(1-1))*(50-(1-1))*8 = 100*50*8
+                        nn.Conv2d(8, 16, kernel_size=10),  # (100-(10-1))*(50-(10-1))*16 = 91*41*16
+                        nn.BatchNorm2d(16),
+                        nn.ReLU(),
+                        nn.MaxPool2d(2, 2))              # |(91-2)/2+1|*|(41-2)/2+1|*16 = 45*20*16
+
+        self.fc = nn.Sequential(
+                        nn.Linear(45*20*16, 300),
+                        nn.ReLU(),
+                        nn.Dropout(0.4),
+                        nn.Linear(300, 6))
+        
+    def forward(self, x):
+        out = self.cnn(x)
+        out = out.view(-1, 45*20*16)
+        out = self.fc(out)
+        return out
+
 
 class Inception(nn.Module):
 
