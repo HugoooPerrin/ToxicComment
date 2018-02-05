@@ -42,21 +42,22 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
 
         self.cnn = nn.Sequential(
-                        nn.Conv1d(1, 8, kernel_size=1),  # (100-(1-1))*8 = 100*8
-                        nn.Conv1d(8, 16, kernel_size=10),  # (100-(10-1))*16 = 91*16
-                        nn.BatchNorm1d(16),
-                        nn.ReLU(),
-                        nn.MaxPool1d(2, 2))              # |(91-2)/2+1|*16 = 45*16
+                        nn.Conv1d(30, 30, kernel_size=1),  # (100-(1-1))*30 = 100*30
+                        nn.Conv1d(30, 15, kernel_size=10),  # (100-(10-1))*15 = 91*15
+                        nn.Conv1d(15, 6, kernel_size=10),  # (91-(10-1))*6 = 82*6
+                        nn.BatchNorm1d(6),
+                        nn.ReLU())
+                        # nn.MaxPool1d(2, 2))              # |(91-2)/2+1|*15 = 45*15
 
         self.fc = nn.Sequential(
-                        nn.Linear(45*16, 300),
+                        nn.Linear(82*6, 80),
                         nn.ReLU(),
                         nn.Dropout(0.4),
-                        nn.Linear(300, 6))
+                        nn.Linear(80, 6))
         
     def forward(self, x):
         out = self.cnn(x)
-        out = out.view(-1, 45*16)
+        out = out.view(-1, 82*6)
         out = self.fc(out)
         return out
 
@@ -70,18 +71,18 @@ class CNN_2D(nn.Module):  # Doesn't work yet
                         # nn.Conv2d(1, 8, kernel_size=1),  # (100-(1-1))*(50-(1-1))*8 = 100*50*8
                         nn.Conv2d(1, 8, kernel_size=10),  # (100-(10-1))*(50-(10-1))*8 = 91*41*8
                         nn.BatchNorm2d(8),
-                        nn.ReLU(),
-                        nn.MaxPool2d(2, 2))              # |(91-2)/2+1|*|(41-2)/2+1|*8 = 45*20*8
+                        nn.ReLU())
+                        # nn.MaxPool2d(2, 2))              # |(91-2)/2+1|*|(41-2)/2+1|*8 = 45*20*8
 
         self.fc = nn.Sequential(
-                        nn.Linear(45*20*8, 300),
+                        nn.Linear(91*41*8, 300),
                         nn.ReLU(),
                         nn.Dropout(0.4),
                         nn.Linear(300, 6))
         
     def forward(self, x):
         out = self.cnn(x)
-        out = out.view(-1, 45*20*8)
+        out = out.view(-1, 91*41*8)
         out = self.fc(out)
         return out
 
