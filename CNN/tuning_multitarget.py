@@ -120,7 +120,7 @@ for i in range(CV):
 
     CV_score += score*(1/CV)
 
-    print("\nModel intermediate score: {}\n".format(round(score,5)))
+    print("\nModel intermediate score: {}".format(round(score,5)))
 
 
 print("\nModel final score: {}\n".format(round(CV_score,5)))
