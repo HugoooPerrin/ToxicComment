@@ -43,21 +43,21 @@ class CNN(nn.Module):
 
         self.cnn = nn.Sequential(
                         nn.Conv1d(30, 30, kernel_size=1),  # (100-(1-1))*30 = 100*30
-                        nn.Conv1d(30, 15, kernel_size=10),  # (100-(10-1))*15 = 91*15
-                        nn.Conv1d(15, 6, kernel_size=10),  # (91-(10-1))*6 = 82*6
-                        nn.BatchNorm1d(6),
+                        nn.Conv1d(30, 30, kernel_size=5),  # (100-(5-1))*30 = 96*30
+                        nn.Conv1d(30, 30, kernel_size=10),  # (96-(10-1))*30 = 87*30
+                        nn.BatchNorm1d(30),
                         nn.ReLU())
                         # nn.MaxPool1d(2, 2))              # |(91-2)/2+1|*15 = 45*15
 
         self.fc = nn.Sequential(
-                        nn.Linear(82*6, 80),
+                        nn.Linear(87*30, 300),
                         nn.ReLU(),
                         nn.Dropout(0.4),
-                        nn.Linear(80, 6))
+                        nn.Linear(300, 6))
         
     def forward(self, x):
         out = self.cnn(x)
-        out = out.view(-1, 82*6)
+        out = out.view(-1, -1, 87*30)
         out = self.fc(out)
         return out
 
@@ -68,21 +68,23 @@ class CNN_2D(nn.Module):  # Doesn't work yet
         super(CNN_2D, self).__init__()
 
         self.cnn = nn.Sequential(
-                        # nn.Conv2d(1, 8, kernel_size=1),  # (100-(1-1))*(50-(1-1))*8 = 100*50*8
-                        nn.Conv2d(1, 8, kernel_size=10),  # (100-(10-1))*(50-(10-1))*8 = 91*41*8
+                        nn.Conv2d(1, 8, kernel_size=1),  # (100-(1-1))*(30-(1-1))*8 = 100*30*8
+                        nn.Conv2d(8, 8, kernel_size=5),  # (100-(5-1))*(30-(5-1))*8 = 96*26*8
                         nn.BatchNorm2d(8),
-                        nn.ReLU())
-                        # nn.MaxPool2d(2, 2))              # |(91-2)/2+1|*|(41-2)/2+1|*8 = 45*20*8
+                        nn.ReLU(),
+                        nn.Dropout2d(0.5),
+                        nn.MaxPool2d(2, 2))              # |(96-2)/2+1|*|(26-2)/2+1|*8 = 48*13*8
 
         self.fc = nn.Sequential(
-                        nn.Linear(91*41*8, 300),
+                        nn.Linear(48*13*8, 300),
                         nn.ReLU(),
-                        nn.Dropout(0.4),
+                        nn.Dropout(0.5),
                         nn.Linear(300, 6))
         
     def forward(self, x):
         out = self.cnn(x)
-        out = out.view(-1, 91*41*8)
+        #print(out.size(0), out.size(1), out.size(2), out.size(3))
+        out = out.view(-1, 48*13*8)
         out = self.fc(out)
         return out
 

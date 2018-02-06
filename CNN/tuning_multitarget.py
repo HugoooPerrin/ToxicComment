@@ -30,8 +30,6 @@ from models import *
 sys.path.append('/home/hugoperrin/Bureau/DataScience/Kaggle/ToxicComment/Models/')
 from utils import *
 
-time1 = time.time()
-
 # Import data (1D)
 # train_vect = np.load('/home/hugoperrin/Bureau/Datasets/ToxicComment/Comment2Vec_train.npy')
 
@@ -44,13 +42,15 @@ targets = Xtrain[list_classes].values
 
 del Xtrain
 
-print(train_vect.shape)
+# print(train_vect.shape)
 
 # Preprocess data for 1D convolution
 # train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1])
 
 # Preprocess data for 2D convolution
-# train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1], train_vect.shape[2])
+train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1], train_vect.shape[2])
+
+time1 = time.time()
 
 # Cross validation loop
 CV = 4
@@ -76,8 +76,8 @@ for i in range(CV):
 
     use_GPU = True
 
-    batch_size = 512
-    num_epoch = 8
+    batch_size = 64
+    num_epoch = 5
 
     train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                    torch.FloatTensor(train_labels))
@@ -103,11 +103,11 @@ for i in range(CV):
                                                shuffle=False, 
                                                num_workers = 8)
 
-    net = CNN()
+    net = CNN_2D()
 
     criterion = nn.BCEWithLogitsLoss()
     # optimizer = optim.SGD(net.parameters(), lr=0.02, momentum=0.9)
-    optimizer = optim.RMSprop(net.parameters(), lr=0.0001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
+    optimizer = optim.RMSprop(net.parameters(), lr=0.00001, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9)
 
     train_multitarget(num_epoch, net, train_loader, optimizer, criterion, 
                             valid_loader=valid_loader, use_GPU=use_GPU, target_number=6)
