@@ -128,7 +128,7 @@ def train_multitarget(num_epoch, model, train_loader, optimizer, criterion, vali
             # print statistics
             running_loss += loss.data[0]
             i += 1
-            if i % 500 == 499:    # Print every 500 mini-batches
+            if i % 100 == 99:    # Print every 500 mini-batches
 
                 if valid_loader is not None:
 
@@ -142,11 +142,11 @@ def train_multitarget(num_epoch, model, train_loader, optimizer, criterion, vali
                         score += roc_auc_score(labels[:,j],predictions.iloc[:,j])*(1/target_number)
 
                     print('Epoch: %d, step: %5d, training loss: %.4f, validation AUC-ROC: %.5f' % 
-                          (epoch + 1, i + 1, running_loss / 500, score))
+                          (epoch + 1, i + 1, running_loss / 100, score))
                     running_loss = 0.0
                 else:
                     print('Epoch: %d, step: %5d, training loss: %.4f' % 
-                          (epoch + 1, i + 1, running_loss / 500))
+                          (epoch + 1, i + 1, running_loss / 100))
                     running_loss = 0.0
 
 

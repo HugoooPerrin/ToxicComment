@@ -35,7 +35,7 @@ del Xtrain
 # train_vect = train_vect.reshape(train_vect.shape[0],1,train_vect.shape[1])
 
 # Cross validation loop
-CV = 4
+CV = 3
 
 CV_score = 0
 
@@ -72,8 +72,8 @@ for i in range(CV):
 
         use_GPU = True
 
-        batch_size = 512
-        num_epoch = 6
+        batch_size = 256
+        num_epoch = 7
 
         train_dataset = torch.utils.data.TensorDataset(torch.FloatTensor(train_comments), 
                                                        torch.FloatTensor(labels_train))

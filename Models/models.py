@@ -42,22 +42,23 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
 
         self.cnn = nn.Sequential(
-                        nn.Conv1d(30, 30, kernel_size=1),  # (100-(1-1))*30 = 100*30
-                        nn.Conv1d(30, 30, kernel_size=5),  # (100-(5-1))*30 = 96*30
-                        nn.Conv1d(30, 30, kernel_size=10),  # (96-(10-1))*30 = 87*30
-                        nn.BatchNorm1d(30),
-                        nn.ReLU())
-                        # nn.MaxPool1d(2, 2))              # |(91-2)/2+1|*15 = 45*15
+                        nn.Conv1d(1, 30, kernel_size=1),  # (100-(1-1))*30 = 100*30
+                        nn.Conv1d(30, 60, kernel_size=5),  # (100-(5-1))*60 = 96*60
+                        nn.Conv1d(60, 120, kernel_size=5),  # (96-(5-1))*120 = 91*120
+                        nn.BatchNorm1d(120),
+                        nn.ReLU(),
+                        nn.Dropout(0.7),
+                        nn.MaxPool1d(2, 2))              # |(91-2)/2+1|*120 = 46*120
 
         self.fc = nn.Sequential(
-                        nn.Linear(87*30, 300),
+                        nn.Linear(46*120, 1000),
                         nn.ReLU(),
-                        nn.Dropout(0.4),
-                        nn.Linear(300, 6))
+                        nn.Dropout(0.7),
+                        nn.Linear(1000, 6))
         
     def forward(self, x):
         out = self.cnn(x)
-        out = out.view(-1, -1, 87*30)
+        out = out.view(-1, 46*120)
         out = self.fc(out)
         return out
 
@@ -95,18 +96,18 @@ class Inception(nn.Module):
         super(Inception, self).__init__()
 
         self.module1 = nn.Sequential(
-                            nn.Conv1d(1, 8, kernel_size=1),  # (100-(1-1))*8 = 100*8
-                            nn.Conv1d(8, 16, kernel_size=5),  # (100-(5-1))*16 = 96*16
-                            nn.BatchNorm1d(16),
-                            nn.ReLU(),
+                            nn.Conv1d(1, 16, kernel_size=1),  # (100-(1-1))*16 = 100*16
+                            nn.Conv1d(16, 32, kernel_size=5),  # (100-(5-1))*32 = 96*32
+                            nn.BatchNorm1d(32),
+                            nn.Tanh(),
                             nn.Dropout(0.6),
-                            nn.MaxPool1d(2, 2))              # |(96-2)/2+1|*16 = 48*16
+                            nn.MaxPool1d(2, 2))              # |(96-2)/2+1|*32 = 48*32
 
         self.module2 = nn.Sequential(
                             nn.Conv1d(1, 8, kernel_size=1),  # (100-(1-1))*8 = 100*8
                             nn.Conv1d(8, 16, kernel_size=10),  # (100-(10-1))*16 = 91*16
                             nn.BatchNorm1d(16),
-                            nn.ReLU(),
+                            nn.Tanh(),
                             nn.Dropout(0.6),
                             nn.MaxPool1d(2, 2))              # |(91-2)/2+1|*16 = 45*16
 
@@ -114,12 +115,12 @@ class Inception(nn.Module):
                             nn.Conv1d(1, 8, kernel_size=1),  # (100-(1-1))*8 = 100*8
                             nn.Conv1d(8, 16, kernel_size=20),# (100-(20-1))*16 = 81*16
                             nn.BatchNorm1d(16),
-                            nn.ReLU(),
+                            nn.Tanh(),
                             nn.Dropout(0.6),
                             nn.MaxPool1d(2, 2))              # |(81-2)/2+1|*16 = 40*16
 
         self.final_module = nn.Sequential(
-                                nn.Linear(48*16+45*16+40*16, 1024),
+                                nn.Linear(48*32+45*16+40*16, 1024),
                                 nn.ReLU(),
                                 nn.Dropout(0.6),
                                 nn.Linear(1024, 512),
@@ -130,7 +131,7 @@ class Inception(nn.Module):
     def forward(self, x):
 
         inter1 = self.module1(x)
-        inter1 = inter1.view(-1, 48*16)
+        inter1 = inter1.view(-1, 48*32)
 
         inter2 = self.module2(x)
         inter2 = inter2.view(-1, 45*16)
