@@ -63,7 +63,7 @@ class CNN(nn.Module):
         return out
 
 
-class CNN_2D(nn.Module):  # Doesn't work yet 
+class CNN_2D(nn.Module):
 
     def __init__(self):
         super(CNN_2D, self).__init__()
@@ -84,7 +84,6 @@ class CNN_2D(nn.Module):  # Doesn't work yet
         
     def forward(self, x):
         out = self.cnn(x)
-        #print(out.size(0), out.size(1), out.size(2), out.size(3))
         out = out.view(-1, 48*13*8)
         out = self.fc(out)
         return out
@@ -145,3 +144,40 @@ class Inception(nn.Module):
         out = self.final_module(out)
 
         return out
+
+ 
+class Autoencoder(nn.Module):
+
+    def __init__(self):
+        super(Autoencoder, self).__init__()
+
+        self.encoder = nn.Sequential(
+                                nn.Linear(100, 50),
+                                nn.ReLU(),
+                                nn.Dropout(0.2),
+                                nn.Linear(50, 25),
+                                nn.ReLU(),
+                                nn.Dropout(0.2),
+                                nn.Linear(25, 10),
+                                nn.ReLU(),
+                                nn.Dropout(0.2),
+                                nn.Linear(10, 2))
+
+        self.decoder = nn.Sequential(
+                                nn.Linear(2, 10),
+                                nn.ReLU(),
+                                nn.Dropout(0.2),
+                                nn.Linear(10, 25),
+                                nn.ReLU(),
+                                nn.Dropout(0.2),
+                                nn.Linear(25, 50),
+                                nn.ReLU(),
+                                nn.Dropout(0.2),
+                                nn.Linear(50, 100))
+
+    def forward(self, x):
+        
+        encoded = self.encoder(x)
+        out = self.decoder(encoded)
+
+        return encoded, out
