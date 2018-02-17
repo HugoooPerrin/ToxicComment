@@ -150,7 +150,7 @@ def train_multitarget(num_epoch, model, train_loader, optimizer, criterion, vali
                     running_loss = 0.0
 
 
-def train_autoencoder(num_epoch, model, train_loader, optimizer, criterion, valid_loader=None, use_GPU=True):
+def train_autoencoder(num_epoch, model, train_loader, optimizer, criterion, display_step=500, valid_loader=None, use_GPU=True):
 
     if use_GPU:
         model = model.cuda()
@@ -190,7 +190,8 @@ def train_autoencoder(num_epoch, model, train_loader, optimizer, criterion, vali
             # print statistics
             running_loss += loss.data[0]
             i += 1
-            if i % 100 == 99:    # Print every 100 mini-batches
+
+            if i % display_step == display_step-1:    # Print every 1000 mini-batches
 
                 if valid_loader is not None:
                     model.eval()
@@ -212,11 +213,11 @@ def train_autoencoder(num_epoch, model, train_loader, optimizer, criterion, vali
                     validation_loss = mean_squared_error(labels, prediction)
 
                     print('Epoch: %d, step: %5d, training MSE: %.4f, validation MSE: %.4f' % 
-                          (epoch + 1, i + 1, running_loss / 100, validation_loss))
+                          (epoch + 1, i + 1, running_loss / display_step, validation_loss))
                     running_loss = 0.0
                 else:
-                    print('Epoch: %d, step: %5d, training loss: %.4f' % 
-                          (epoch + 1, i + 1, running_loss / 100))
+                    print('Epoch: %d, step: %5d, training MSE: %.4f' % 
+                          (epoch + 1, i + 1, running_loss / display_step))
                     running_loss = 0.0
 
 
