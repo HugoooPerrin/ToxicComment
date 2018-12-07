@@ -181,3 +181,4 @@ class Autoencoder(nn.Module):
         out = self.decoder(encoded)
 
         return encoded, out
+    

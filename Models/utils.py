@@ -285,7 +285,7 @@ def predict_autoencoder(model, dataset_loader, use_GPU=True):
 
         encoded, outputs = model(inputs)
 
-        del inputs
+        del inputs, encoded
 
         if use_GPU:
             prediction = outputs.data.cpu().numpy() # probabilities      

@@ -6,4 +6,3 @@ Implementation of:
 - word embedding using gensim
 - several convolutional network architectures using pytorch
 
-Achieve an AUC-ROC of 0.96
